@@ -1,0 +1,26 @@
+# Environment
+.env
+.env.*
+
+# Binaries
+*.exe
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Build folder
+/build/
+dist/
+
+# OS / Editor generated files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Go stuff
+/bin/
+/vendor/
