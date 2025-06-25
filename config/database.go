@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/tiedsandi/project_contact-management-go/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -36,6 +37,14 @@ func ConnectDB() {
 
 	fmt.Println("✅ Connected to PostgreSQL!")
 	DB = db
+}
+
+func Migrate() {
+	err := DB.AutoMigrate(&models.User{})
+	if err != nil {
+		log.Fatal("❌ Failed to migrate database:", err)
+	}
+	fmt.Println("✅ Database migrated successfully!")
 }
 
 // ======================== ini yang sebelum di buat env.go ===================
