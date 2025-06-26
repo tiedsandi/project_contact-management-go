@@ -10,6 +10,7 @@ import (
 
 type ContactService interface {
 	CreateContact(userId uint, contact *models.Contact) (*models.Contact, error)
+	SearchContacts(userId uint, name, email, phone string, page, size int) ([]models.Contact, int64, error)
 }
 
 type contactService struct {
@@ -39,4 +40,9 @@ func (s *contactService) CreateContact(userId uint, contact *models.Contact) (*m
 	}
 
 	return contact, nil
+}
+
+func (s *contactService) SearchContacts(userId uint, name, email, phone string, page, size int) ([]models.Contact, int64, error) {
+	offset := (page - 1) * size
+	return s.repo.Search(userId, name, email, phone, offset, size)
 }

@@ -1,7 +1,9 @@
 package controllers
 
 import (
+	"math"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tiedsandi/project_contact-management-go/config"
@@ -52,4 +54,51 @@ func CreateContact(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, gin.H{"data": resp})
+}
+
+func SearchContacts(c *gin.Context) {
+	userIdInterface, exists := c.Get("userId")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"errors": "Unauthorized"})
+		return
+	}
+	userId := userIdInterface.(uint)
+
+	name := c.Query("name")
+	email := c.Query("email")
+	phone := c.Query("phone")
+
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	size, _ := strconv.Atoi(c.DefaultQuery("size", "10"))
+
+	repo := repositories.NewContactRepository(config.DB)
+	service := services.NewContactService(repo)
+
+	contacts, total, err := service.SearchContacts(userId, name, email, phone, page, size)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"errors": err.Error()})
+		return
+	}
+
+	var contactResponses []response.ContactResponse
+	for _, contact := range contacts {
+		contactResponses = append(contactResponses, response.ContactResponse{
+			ID:        contact.ID,
+			FirstName: contact.FirstName,
+			LastName:  contact.LastName,
+			Email:     contact.Email,
+			Phone:     contact.Phone,
+		})
+	}
+
+	totalPages := int(math.Ceil(float64(total) / float64(size)))
+
+	c.JSON(http.StatusOK, gin.H{
+		"data": contactResponses,
+		"paging": gin.H{
+			"page":       page,
+			"total_page": totalPages,
+			"total_item": total,
+		},
+	})
 }
