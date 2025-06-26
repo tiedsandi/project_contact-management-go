@@ -35,3 +35,18 @@ func (u *User) Save(db *gorm.DB) error {
 
 	return nil
 }
+
+func GetUserByUsername(db *gorm.DB, username string) (*User, error) {
+	var user User
+	if err := db.Where("username = ?", username).First(&user).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.New("user not found")
+		}
+		return nil, err
+	}
+	return &user, nil
+}
+
+func (u *User) CheckPassword(password string) bool {
+	return utils.CheckPasswordHash(password, u.Password)
+}

@@ -9,8 +9,8 @@ func UserRoutes(router *gin.Engine) {
 	// Public routes (tanpa token)
 	userPublic := router.Group("/api/users")
 	{
-		userPublic.POST("", controllers.Signup) // Register
-		// userPublic.POST("/login", controllers.Login)        // Login
+		userPublic.POST("/signup", controllers.Signup) // Register
+		userPublic.POST("/login", controllers.Login)   // Login
 	}
 
 	// Protected routes (butuh token / sudah login)

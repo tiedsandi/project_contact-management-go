@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -44,4 +45,43 @@ func Signup(context *gin.Context) {
 	}
 
 	context.JSON(http.StatusCreated, gin.H{"message": "User created successfully"})
+}
+
+func Login(context *gin.Context) {
+	var request struct {
+		Username string `json:"username"`
+		Password string `json:"password"`
+	}
+
+	if err := context.ShouldBindJSON(&request); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"errors": "Invalid request"})
+		return
+	}
+
+	user, err := models.GetUserByUsername(config.DB, request.Username)
+
+	// Console log user
+	fmt.Printf("User: %+v\n", user)
+
+	if err != nil {
+		if err.Error() == "user not found" {
+			context.JSON(http.StatusUnauthorized, gin.H{"errors": "Username or password wrong"})
+		} else {
+			context.JSON(http.StatusInternalServerError, gin.H{"errors": "Internal server error"})
+		}
+		return
+	}
+
+	if !user.CheckPassword(request.Password) {
+		context.JSON(http.StatusUnauthorized, gin.H{"errors": "Username or password wrong"})
+		return
+	}
+
+	token, err := utils.GenerateToken(user.ID, user.Username)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"errors": "Failed to generate token"})
+		return
+	}
+
+	context.JSON(http.StatusOK, gin.H{"data": gin.H{"token": token}})
 }
