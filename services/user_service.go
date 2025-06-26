@@ -2,65 +2,71 @@ package services
 
 import (
 	"errors"
+	"strings"
 
-	"github.com/tiedsandi/project_contact-management-go/config"
 	"github.com/tiedsandi/project_contact-management-go/models"
 	"github.com/tiedsandi/project_contact-management-go/repositories"
 	"github.com/tiedsandi/project_contact-management-go/utils"
 )
 
-func RegisterUser(user *models.User) error {
-	if user.Username == "" || user.Name == "" {
-		return errors.New("username and name are required")
+func CreateUser(user *models.User) error {
+	// Validation level service
+	if user.Username == "" || strings.Contains(user.Username, " ") {
+		return errors.New("username cannot be empty or contain spaces")
 	}
 
 	if !utils.IsValidPassword(user.Password) {
-		return errors.New("invalid password format")
+		return errors.New("password must be at least 6 characters long and contain both letters and numbers")
 	}
 
-	hashed, err := utils.HashPassword(user.Password)
-	if err != nil {
-		return err
+	if user.Name == "" {
+		return errors.New("name is required")
 	}
-	user.Password = hashed
 
-	return repositories.CreateUser(config.DB, user)
+	user.Password, _ = utils.HashPassword(user.Password)
+
+	err := repositories.CreateUser(user)
+	if err != nil && strings.Contains(err.Error(), "duplicate key") {
+		return errors.New("username already used")
+	}
+
+	return err
 }
 
-func AuthenticateUser(username, password string) (*models.User, error) {
-	user, err := repositories.GetUserByUsername(config.DB, username)
+func Login(username, password string) (*models.User, error) {
+	user, err := repositories.GetUserByUsername(username)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("username or password wrong")
 	}
 
 	if !utils.CheckPasswordHash(password, user.Password) {
-		return nil, errors.New("invalid username or password")
+		return nil, errors.New("username or password wrong")
 	}
 
 	return user, nil
 }
 
-func UpdateUser(userId uint, name *string, password *string) (*models.User, error) {
-	user, err := repositories.GetUserByID(config.DB, userId)
+func UpdateUserByID(userID uint, name *string, password *string) (*models.User, error) {
+	user, err := repositories.GetUserByID(userID)
 	if err != nil {
-		return nil, errors.New("user not found")
+		return nil, err
 	}
 
 	if name != nil {
+		if len(*name) > 100 {
+			return nil, errors.New("name length max 100")
+		}
 		user.Name = *name
 	}
 
 	if password != nil {
 		if !utils.IsValidPassword(*password) {
-			return nil, errors.New("invalid password format")
+			return nil, errors.New("password must be at least 6 characters long and contain both letters and numbers")
 		}
 		hashed, _ := utils.HashPassword(*password)
 		user.Password = hashed
 	}
 
-	if err := config.DB.Save(user).Error; err != nil {
-		return nil, err
-	}
-
-	return user, nil
+	err = repositories.UpdateUser(user)
+	return user, err
 }

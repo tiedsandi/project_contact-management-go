@@ -7,17 +7,11 @@ import (
 )
 
 func UserRoutes(router *gin.Engine) {
-	userPublic := router.Group("/api/users")
-	{
-		userPublic.POST("/signup", controllers.Signup)
-		userPublic.POST("/login", controllers.Login)
-	}
+	router.POST("/api/users/signup", controllers.Signup)
+	router.POST("/api/users/login", controllers.Login)
 
 	userPrivate := router.Group("/api/users")
 	userPrivate.Use(middlewares.Authenticate)
-	{
-		userPrivate.PATCH("/current", controllers.UpdateUser)
-		userPrivate.GET("/current", controllers.GetUser)
-		// userPrivate.DELETE("/logout", controllers.Logout)
-	}
+	userPrivate.GET("/profile", controllers.GetUser)
+	userPrivate.PUT("/profile", controllers.UpdateUser)
 }

@@ -3,17 +3,19 @@ package repositories
 import (
 	"errors"
 
+	"github.com/tiedsandi/project_contact-management-go/config"
 	"github.com/tiedsandi/project_contact-management-go/models"
 	"gorm.io/gorm"
 )
 
-func CreateUser(db *gorm.DB, user *models.User) error {
-	return db.Create(user).Error
+func CreateUser(user *models.User) error {
+	return config.DB.Create(user).Error
 }
 
-func GetUserByUsername(db *gorm.DB, username string) (*models.User, error) {
+func GetUserByUsername(username string) (*models.User, error) {
 	var user models.User
-	if err := db.Where("username = ?", username).First(&user).Error; err != nil {
+	err := config.DB.Where("username = ?", username).First(&user).Error
+	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.New("user not found")
 		}
@@ -22,10 +24,18 @@ func GetUserByUsername(db *gorm.DB, username string) (*models.User, error) {
 	return &user, nil
 }
 
-func GetUserByID(db *gorm.DB, userId uint) (*models.User, error) {
+func GetUserByID(userID uint) (*models.User, error) {
 	var user models.User
-	if err := db.First(&user, userId).Error; err != nil {
+	err := config.DB.First(&user, userID).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.New("user not found")
+		}
 		return nil, err
 	}
 	return &user, nil
+}
+
+func UpdateUser(user *models.User) error {
+	return config.DB.Save(user).Error
 }

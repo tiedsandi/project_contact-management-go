@@ -5,19 +5,28 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/tiedsandi/project_contact-management-go/models"
+	"github.com/tiedsandi/project_contact-management-go/requests"
+	"github.com/tiedsandi/project_contact-management-go/responses"
 	"github.com/tiedsandi/project_contact-management-go/services"
 	"github.com/tiedsandi/project_contact-management-go/utils"
 )
 
 func Signup(c *gin.Context) {
-	var user models.User
-	if err := c.ShouldBindJSON(&user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"errors": "Invalid JSON format"})
+	var req requests.CreateUserRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid JSON format"})
 		return
 	}
 
-	if err := services.RegisterUser(&user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"errors": err.Error()})
+	user := models.User{
+		Username: req.Username,
+		Password: req.Password,
+		Name:     req.Name,
+	}
+
+	err := services.CreateUser(&user)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
 
@@ -25,29 +34,21 @@ func Signup(c *gin.Context) {
 }
 
 func Login(c *gin.Context) {
-	var request struct {
-		Username string `json:"username"`
-		Password string `json:"password"`
-	}
-
-	if err := c.ShouldBindJSON(&request); err != nil {
+	var req requests.LoginRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"errors": "Invalid request"})
 		return
 	}
 
-	user, err := services.AuthenticateUser(request.Username, request.Password)
+	user, err := services.Login(req.Username, req.Password)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"errors": "Invalid username or password"})
+		c.JSON(http.StatusUnauthorized, gin.H{"errors": err.Error()})
 		return
 	}
 
-	token, err := utils.GenerateToken(user.ID, user.Username, user.Name)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"errors": "Failed to generate token"})
-		return
-	}
+	token, _ := utils.GenerateToken(user.ID, user.Username, user.Name)
 
-	c.JSON(http.StatusOK, gin.H{"data": gin.H{"token": token}})
+	c.JSON(http.StatusOK, gin.H{"data": responses.TokenResponse{Token: token}})
 }
 
 func GetUser(c *gin.Context) {
@@ -72,26 +73,20 @@ func UpdateUser(c *gin.Context) {
 	}
 	userId := userIdInterface.(uint)
 
-	var request struct {
-		Name     *string `json:"name"`
-		Password *string `json:"password"`
-	}
-
-	if err := c.ShouldBindJSON(&request); err != nil {
+	var req requests.UpdateUserRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"errors": "Invalid request"})
 		return
 	}
 
-	updatedUser, err := services.UpdateUser(userId, request.Name, request.Password)
+	user, err := services.UpdateUserByID(userId, req.Name, req.Password)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"errors": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"data": gin.H{
-			"username": updatedUser.Username,
-			"name":     updatedUser.Name,
-		},
-	})
+	c.JSON(http.StatusOK, gin.H{"data": responses.UserResponse{
+		Username: user.Username,
+		Name:     user.Name,
+	}})
 }
