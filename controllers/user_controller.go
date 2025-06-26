@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -61,7 +60,7 @@ func Login(context *gin.Context) {
 	user, err := models.GetUserByUsername(config.DB, request.Username)
 
 	// Console log user
-	fmt.Printf("User: %+v\n", user)
+	// fmt.Printf("User: %+v\n", user)
 
 	if err != nil {
 		if err.Error() == "user not found" {
@@ -77,11 +76,25 @@ func Login(context *gin.Context) {
 		return
 	}
 
-	token, err := utils.GenerateToken(user.ID, user.Username)
+	token, err := utils.GenerateToken(user.ID, user.Username, user.Name)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"errors": "Failed to generate token"})
 		return
 	}
 
 	context.JSON(http.StatusOK, gin.H{"data": gin.H{"token": token}})
+}
+
+func GetUser(c *gin.Context) {
+	userId, _ := c.Get("userId")
+	username, _ := c.Get("username")
+	name, _ := c.Get("name")
+
+	c.JSON(http.StatusOK, gin.H{
+		"data": gin.H{
+			"userId":   userId,
+			"username": username,
+			"name":     name,
+		},
+	})
 }
