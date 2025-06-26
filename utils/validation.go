@@ -19,3 +19,11 @@ func HasNumber(s string) bool {
 	}
 	return false
 }
+
+func IsValidPassword(password string) bool {
+	if len(password) < 6 {
+		return false
+	}
+
+	return HasLetter(password) && HasNumber(password)
+}

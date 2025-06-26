@@ -1,0 +1,18 @@
+PATCH http://localhost:8080/api/users/current
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxMCwidXNlcm5hbWUiOiJ0ZXN0aW5nIiwibmFtZSI6InRlc3RpbmciLCJleHAiOjE3NTA5OTQyNDN9.5fujwVIVU_ZgqWLweWBfLNpcjEW01KCiV7MkRvNQsDk
+Content-Type: application/json
+
+{
+  "name": "Sandi",
+  "password": "qwe123"
+}
+
+# {
+#   "name": "Sandi"
+# }
+
+# {
+#   "password": "pw123456"
+# }
+
+

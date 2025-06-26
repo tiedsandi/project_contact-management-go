@@ -24,7 +24,7 @@ func Signup(context *gin.Context) {
 		return
 	}
 
-	if len(user.Password) < 6 || !utils.HasLetter(user.Password) || !utils.HasNumber(user.Password) {
+	if !utils.IsValidPassword(user.Password) {
 		context.JSON(http.StatusBadRequest, gin.H{"message": "Password must be at least 6 characters long and contain both letters and numbers"})
 		return
 	}
@@ -95,6 +95,62 @@ func GetUser(c *gin.Context) {
 			"userId":   userId,
 			"username": username,
 			"name":     name,
+		},
+	})
+}
+
+func UpdateUser(c *gin.Context) {
+	userIdInterface, exists := c.Get("userId")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"errors": "Unauthorized"})
+		return
+	}
+	userId := userIdInterface.(uint)
+
+	var request struct {
+		Name     *string `json:"name"`
+		Password *string `json:"password"`
+	}
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"errors": "Invalid request"})
+		return
+	}
+
+	var user models.User
+	if err := config.DB.First(&user, userId).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"errors": "User not found"})
+		return
+	}
+
+	if request.Name != nil {
+		if len(*request.Name) > 100 {
+			c.JSON(http.StatusBadRequest, gin.H{"errors": "Name length max 100"})
+			return
+		}
+		user.Name = *request.Name
+	}
+
+	if request.Password != nil {
+		if !utils.IsValidPassword(*request.Password) {
+			c.JSON(http.StatusBadRequest, gin.H{"errors": "Password must be at least 6 characters long and contain both letters and numbers"})
+			return
+		}
+
+		hashedPassword, _ := utils.HashPassword(*request.Password)
+		user.Password = hashedPassword
+	}
+
+	// Simpan ke DB
+	if err := config.DB.Save(&user).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"errors": "Failed to update user"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data": gin.H{
+			"username": user.Username,
+			"name":     user.Name,
 		},
 	})
 }

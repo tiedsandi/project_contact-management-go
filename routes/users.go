@@ -16,7 +16,7 @@ func UserRoutes(router *gin.Engine) {
 	userPrivate := router.Group("/api/users")
 	userPrivate.Use(middlewares.Authenticate)
 	{
-		// userPrivate.PATCH("/current", controllers.UpdateUser)
+		userPrivate.PATCH("/current", controllers.UpdateUser)
 		userPrivate.GET("/current", controllers.GetUser)
 		// userPrivate.DELETE("/logout", controllers.Logout)
 	}
