@@ -5,14 +5,14 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/tiedsandi/project_contact-management-go/models"
-	"github.com/tiedsandi/project_contact-management-go/requests"
-	"github.com/tiedsandi/project_contact-management-go/responses"
+	"github.com/tiedsandi/project_contact-management-go/request"
+	"github.com/tiedsandi/project_contact-management-go/response"
 	"github.com/tiedsandi/project_contact-management-go/services"
 	"github.com/tiedsandi/project_contact-management-go/utils"
 )
 
 func Signup(c *gin.Context) {
-	var req requests.CreateUserRequest
+	var req request.CreateUserRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid JSON format"})
 		return
@@ -34,7 +34,7 @@ func Signup(c *gin.Context) {
 }
 
 func Login(c *gin.Context) {
-	var req requests.LoginRequest
+	var req request.LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"errors": "Invalid request"})
 		return
@@ -48,7 +48,7 @@ func Login(c *gin.Context) {
 
 	token, _ := utils.GenerateToken(user.ID, user.Username, user.Name)
 
-	c.JSON(http.StatusOK, gin.H{"data": responses.TokenResponse{Token: token}})
+	c.JSON(http.StatusOK, gin.H{"data": response.TokenResponse{Token: token}})
 }
 
 func GetUser(c *gin.Context) {
@@ -73,7 +73,7 @@ func UpdateUser(c *gin.Context) {
 	}
 	userId := userIdInterface.(uint)
 
-	var req requests.UpdateUserRequest
+	var req request.UpdateUserRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"errors": "Invalid request"})
 		return
@@ -85,7 +85,7 @@ func UpdateUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": responses.UserResponse{
+	c.JSON(http.StatusOK, gin.H{"data": response.UserResponse{
 		Username: user.Username,
 		Name:     user.Name,
 	}})
