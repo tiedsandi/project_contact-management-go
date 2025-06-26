@@ -6,9 +6,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/tiedsandi/project_contact-management-go/config"
 	"github.com/tiedsandi/project_contact-management-go/models"
-	"github.com/tiedsandi/project_contact-management-go/repositories"
 	"github.com/tiedsandi/project_contact-management-go/request"
 	"github.com/tiedsandi/project_contact-management-go/response"
 	"github.com/tiedsandi/project_contact-management-go/services"
@@ -28,18 +26,14 @@ func CreateContact(c *gin.Context) {
 		return
 	}
 
-	repo := repositories.NewContactRepository(config.DB)
-	service := services.NewContactService(repo)
-
 	contact := &models.Contact{
 		FirstName: req.FirstName,
 		LastName:  req.LastName,
 		Email:     req.Email,
 		Phone:     req.Phone,
-		UserID:    userId,
 	}
 
-	savedContact, err := service.CreateContact(userId, contact)
+	savedContact, err := services.CreateContact(userId, contact)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"errors": err.Error()})
 		return
@@ -71,10 +65,7 @@ func SearchContacts(c *gin.Context) {
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	size, _ := strconv.Atoi(c.DefaultQuery("size", "10"))
 
-	repo := repositories.NewContactRepository(config.DB)
-	service := services.NewContactService(repo)
-
-	contacts, total, err := service.SearchContacts(userId, name, email, phone, page, size)
+	contacts, total, err := services.SearchContacts(userId, name, email, phone, page, size)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"errors": err.Error()})
 		return

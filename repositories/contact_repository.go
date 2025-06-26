@@ -1,54 +1,35 @@
 package repositories
 
 import (
+	"github.com/tiedsandi/project_contact-management-go/config"
 	"github.com/tiedsandi/project_contact-management-go/models"
-	"gorm.io/gorm"
 )
 
-type ContactRepository interface {
-	Create(contact *models.Contact) error
-	Search(userId uint, name, email, phone string, offset, limit int) ([]models.Contact, int64, error)
+func CreateContact(contact *models.Contact) error {
+	return config.DB.Create(contact).Error
 }
 
-type contactRepository struct {
-	db *gorm.DB
-}
-
-func NewContactRepository(db *gorm.DB) ContactRepository {
-	return &contactRepository{db}
-}
-
-func (r *contactRepository) Create(contact *models.Contact) error {
-	return r.db.Create(contact).Error
-}
-
-func (r *contactRepository) Search(userId uint, name, email, phone string, offset, limit int) ([]models.Contact, int64, error) {
+func SearchContacts(userId uint, name string, email string, phone string, offset int, size int) ([]models.Contact, int64, error) {
 	var contacts []models.Contact
 	var total int64
 
-	query := r.db.Model(&models.Contact{}).Where("user_id = ?", userId)
+	query := config.DB.Model(&models.Contact{}).Where("user_id = ?", userId)
 
 	if name != "" {
-		query = query.Where("first_name LIKE ? OR last_name LIKE ?", "%"+name+"%", "%"+name+"%")
+		query = query.Where("first_name ILIKE ? OR last_name ILIKE ?", "%"+name+"%", "%"+name+"%")
 	}
-
 	if email != "" {
-		query = query.Where("email LIKE ?", "%"+email+"%")
+		query = query.Where("email ILIKE ?", "%"+email+"%")
 	}
-
 	if phone != "" {
-		query = query.Where("phone LIKE ?", "%"+phone+"%")
+		query = query.Where("phone ILIKE ?", "%"+phone+"%")
 	}
 
-	// Hitung total data
-	if err := query.Count(&total).Error; err != nil {
+	err := query.Count(&total).Error
+	if err != nil {
 		return nil, 0, err
 	}
 
-	// Pagination
-	if err := query.Offset(offset).Limit(limit).Find(&contacts).Error; err != nil {
-		return nil, 0, err
-	}
-
-	return contacts, total, nil
+	err = query.Offset(offset).Limit(size).Find(&contacts).Error
+	return contacts, total, err
 }

@@ -2,47 +2,27 @@ package services
 
 import (
 	"errors"
-	"strings"
 
 	"github.com/tiedsandi/project_contact-management-go/models"
 	"github.com/tiedsandi/project_contact-management-go/repositories"
 )
 
-type ContactService interface {
-	CreateContact(userId uint, contact *models.Contact) (*models.Contact, error)
-	SearchContacts(userId uint, name, email, phone string, page, size int) ([]models.Contact, int64, error)
-}
-
-type contactService struct {
-	repo repositories.ContactRepository
-}
-
-func NewContactService(repo repositories.ContactRepository) ContactService {
-	return &contactService{repo}
-}
-
-func (s *contactService) CreateContact(userId uint, contact *models.Contact) (*models.Contact, error) {
-	// Validasi sederhana
+func CreateContact(userId uint, contact *models.Contact) (*models.Contact, error) {
 	if contact.FirstName == "" {
-		return nil, errors.New("First name is required")
+		return nil, errors.New("first name is required")
 	}
 
-	if !strings.Contains(contact.Email, "@") {
-		return nil, errors.New("Email is not valid format")
-	}
-
-	// Inject userId ke contact
 	contact.UserID = userId
-
-	// Simpan
-	if err := s.repo.Create(contact); err != nil {
-		return nil, err
-	}
-
-	return contact, nil
+	err := repositories.CreateContact(contact)
+	return contact, err
 }
 
-func (s *contactService) SearchContacts(userId uint, name, email, phone string, page, size int) ([]models.Contact, int64, error) {
+func SearchContacts(userId uint, name, email, phone string, page, size int) ([]models.Contact, int64, error) {
+	if page < 1 {
+		page = 1
+	}
 	offset := (page - 1) * size
-	return s.repo.Search(userId, name, email, phone, offset, size)
+
+	contacts, total, err := repositories.SearchContacts(userId, name, email, phone, offset, size)
+	return contacts, total, err
 }
