@@ -33,3 +33,24 @@ func SearchContacts(userId uint, name string, email string, phone string, offset
 	err = query.Offset(offset).Limit(size).Find(&contacts).Error
 	return contacts, total, err
 }
+
+func GetContact(userId uint, contactId uint) (*models.Contact, error) {
+	var contact models.Contact
+	err := config.DB.Where("user_id = ? AND id = ?", userId, contactId).First(&contact).Error
+	if err != nil {
+		return nil, err
+	}
+	return &contact, nil
+}
+
+func UpdateContact(contact *models.Contact) error {
+	return config.DB.Save(contact).Error
+}
+
+func DeleteContactSoft(userId uint, contactId uint) error {
+	return config.DB.Where("user_id = ? AND id = ?", userId, contactId).Delete(&models.Contact{}).Error
+}
+
+func DeleteContactHard(userId uint, contactId uint) error {
+	return config.DB.Unscoped().Where("user_id = ? AND id = ?", userId, contactId).Delete(&models.Contact{}).Error
+}

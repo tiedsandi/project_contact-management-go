@@ -1,0 +1,3 @@
+### Get Contact
+GET http://localhost:8080/api/contacts/6
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxMCwidXNlcm5hbWUiOiJ0ZXN0aW5nIiwibmFtZSI6IlNhbmRpIiwiZXhwIjoxNzUxMDIwODg2fQ.p6ltSRl4Wgk910LaKPaEFSaA6_1JufVAy5-7nvP-AOY

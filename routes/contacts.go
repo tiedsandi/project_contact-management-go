@@ -11,8 +11,8 @@ func ContactRoutes(router *gin.Engine) {
 	contactPrivate.Use(middlewares.Authenticate) // Biar wajib login / token
 
 	contactPrivate.POST("", controllers.CreateContact)
-	// contactPrivate.PUT("/:id", controllers.UpdateContact)
-	// contactPrivate.GET("/:id", controllers.GetContact)
+	contactPrivate.PUT("/:id", controllers.UpdateContact)
+	contactPrivate.GET("/:id", controllers.GetContact)
 	contactPrivate.GET("", controllers.SearchContacts)
-	// contactPrivate.DELETE("/:id", controllers.DeleteContact)
+	contactPrivate.DELETE("/:id", controllers.DeleteContact)
 }

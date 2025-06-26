@@ -93,3 +93,102 @@ func SearchContacts(c *gin.Context) {
 		},
 	})
 }
+
+func GetContact(c *gin.Context) {
+	userIdInterface, exists := c.Get("userId")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"errors": "Unauthorized"})
+		return
+	}
+	userId := userIdInterface.(uint)
+
+	contactId, err := strconv.Atoi(c.Param("id"))
+	if err != nil || contactId <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"errors": "Invalid contact ID"})
+		return
+	}
+
+	contact, err := services.GetContact(userId, uint(contactId))
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"errors": err.Error()})
+		return
+	}
+
+	resp := response.ContactResponse{
+		ID:        contact.ID,
+		FirstName: contact.FirstName,
+		LastName:  contact.LastName,
+		Email:     contact.Email,
+		Phone:     contact.Phone,
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": resp})
+}
+
+func UpdateContact(c *gin.Context) {
+	userIdInterface, exists := c.Get("userId")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"errors": "Unauthorized"})
+		return
+	}
+	userId := userIdInterface.(uint)
+
+	contactId, err := strconv.Atoi(c.Param("id"))
+	if err != nil || contactId <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"errors": "Invalid contact ID"})
+		return
+	}
+
+	var req request.UpdateContactRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"errors": err.Error()})
+		return
+	}
+
+	contact := &models.Contact{
+		ID:        uint(contactId),
+		FirstName: req.FirstName,
+		LastName:  req.LastName,
+		Email:     req.Email,
+		Phone:     req.Phone,
+	}
+
+	savedContact, err := services.UpdateContact(userId, uint(contactId), contact)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"errors": err.Error()})
+		return
+	}
+
+	resp := response.ContactResponse{
+		ID:        savedContact.ID,
+		FirstName: savedContact.FirstName,
+		LastName:  savedContact.LastName,
+		Email:     savedContact.Email,
+		Phone:     savedContact.Phone,
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": resp})
+}
+
+func DeleteContact(c *gin.Context) {
+	userIdInterface, exists := c.Get("userId")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"errors": "Unauthorized"})
+		return
+	}
+	userId := userIdInterface.(uint)
+
+	contactId, err := strconv.Atoi(c.Param("id"))
+	if err != nil || contactId <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"errors": "Invalid contact ID"})
+		return
+	}
+
+	err = services.DeleteContact(userId, uint(contactId))
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"errors": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Contact deleted successfully"})
+}
