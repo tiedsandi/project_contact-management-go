@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+
 	"github.com/tiedsandi/project_contact-management-go/config"
 	"github.com/tiedsandi/project_contact-management-go/routes"
 )

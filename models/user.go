@@ -1,15 +1,18 @@
 package models
 
 import (
+	"errors"
+
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/tiedsandi/project_contact-management-go/utils"
 	"gorm.io/gorm"
 )
 
 type User struct {
 	gorm.Model
-	Username string `gorm:"unique;not null"`
-	Password string `gorm:"not null"`
-	Name     string `gorm:"not null"`
+	Username string `gorm:"unique;not null" json:"username" validate:"required,excludesall= "`
+	Password string `gorm:"not null" json:"password" validate:"required,min=6,passwd"`
+	Name     string `gorm:"not null" json:"name" validate:"required"`
 }
 
 func (u *User) Save(db *gorm.DB) error {
@@ -19,5 +22,16 @@ func (u *User) Save(db *gorm.DB) error {
 	}
 
 	u.Password = hashedPassword
-	return db.Create(u).Error
+
+	err = db.Create(u).Error
+
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+			return errors.New("username already used")
+		}
+		return err
+	}
+
+	return nil
 }
