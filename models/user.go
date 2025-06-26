@@ -10,9 +10,9 @@ import (
 
 type User struct {
 	gorm.Model
-	Username string `gorm:"unique;not null" json:"username" validate:"required,excludesall= "`
-	Password string `gorm:"not null" json:"password" validate:"required,min=6,passwd"`
-	Name     string `gorm:"not null" json:"name" validate:"required"`
+	Username string `gorm:"unique;not null" json:"username"`
+	Password string `gorm:"not null" json:"password"`
+	Name     string `gorm:"not null" json:"name"`
 }
 
 func (u *User) Save(db *gorm.DB) error {
