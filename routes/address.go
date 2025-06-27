@@ -11,8 +11,8 @@ func AddressRoutes(router *gin.Engine) {
 	addressPrivate.Use(middlewares.Authenticate)
 
 	addressPrivate.POST("", controllers.CreateAddress)
-	addressPrivate.PUT("/:id", controllers.UpdateAddress)
-	addressPrivate.GET("/:id", controllers.GetAddress)
+	addressPrivate.PUT("/:addressId", controllers.UpdateAddress)
+	addressPrivate.GET("/:addressId", controllers.GetAddress)
 	addressPrivate.GET("", controllers.ListAddresses)
-	addressPrivate.DELETE("/:id", controllers.DeleteAddress)
+	addressPrivate.DELETE("/:addressId", controllers.DeleteAddress)
 }

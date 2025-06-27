@@ -1,0 +1,12 @@
+### Update Address (Success Example)
+PUT http://localhost:8080/api/contact/13/addresses/5
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxMCwidXNlcm5hbWUiOiJ0ZXN0aW5nIiwibmFtZSI6IlNhbmRpIiwiZXhwIjoxNzUwOTk4OTg3fQ.Fij7RIuvZ_gBsPM2RLo4bMcRzxtq1WqkB5L7tgymsDk
+Content-Type: application/json
+
+{
+  "street": "Jl. Semanggi No.12",
+  "city": "Surabaya",
+  "province": "Jawa Barat",
+  "country": "Indonesia",
+  "postal_code": "123123"
+}
