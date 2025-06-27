@@ -69,5 +69,10 @@ func DeleteContact(userId, contactId uint) error {
 		return errors.New("contact not found")
 	}
 
+	err = repositories.DeleteAddressesByContactIdAndUserId(contactId, userId)
+	if err != nil {
+		return err
+	}
+
 	return repositories.DeleteContactHard(userId, contactId)
 }

@@ -51,3 +51,11 @@ func DeleteHardAddressByIDAndUserID(addressId, userId uint) error {
 func ErrNotFound() error {
 	return config.DB.Error
 }
+
+func DeleteAddressesByContactIdAndUserId(contactId, userId uint) error {
+	return config.DB.Where("contact_id = ? AND user_id = ?", contactId, userId).Delete(&models.Address{}).Error
+}
+
+func DeleteAddressesByContactIdAndUserIdHard(contactId, userId uint) error {
+	return config.DB.Unscoped().Where("contact_id = ? AND user_id = ?", contactId, userId).Delete(&models.Address{}).Error
+}
