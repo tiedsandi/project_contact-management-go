@@ -9,4 +9,5 @@ func RegisterRoutes(router *gin.Engine) {
 
 	UserRoutes(router)
 	ContactRoutes(router)
+	AddressRoutes(router)
 }

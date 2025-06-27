@@ -40,7 +40,11 @@ func ConnectDB() {
 }
 
 func Migrate() {
-	err := DB.AutoMigrate(&models.User{}, &models.Contact{})
+	err := DB.AutoMigrate(
+		&models.User{},
+		&models.Contact{},
+		&models.Address{},
+	)
 	if err != nil {
 		log.Fatal("❌ Failed to migrate database:", err)
 	}

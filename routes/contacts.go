@@ -8,7 +8,7 @@ import (
 
 func ContactRoutes(router *gin.Engine) {
 	contactPrivate := router.Group("/api/contacts")
-	contactPrivate.Use(middlewares.Authenticate) // Biar wajib login / token
+	contactPrivate.Use(middlewares.Authenticate)
 
 	contactPrivate.POST("", controllers.CreateContact)
 	contactPrivate.PUT("/:id", controllers.UpdateContact)
