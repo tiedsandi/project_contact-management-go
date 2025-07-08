@@ -32,6 +32,54 @@ API ini adalah backend sederhana untuk mengelola **Users**, **Contacts**, dan **
 
 ---
 
+## 📦 Installation
+
+Ikuti langkah-langkah berikut untuk menjalankan project ini di lokal:
+
+### 1. Clone Repository
+
+```bash
+git clone https://github.com/tiedsandi/project_contact-management-go.git
+cd project_contact-management-go
+```
+
+### 2. Setup Environment
+
+Buat file `.env` di root project:
+
+```ini
+APP_ENV=development
+DB_HOST=localhost
+DB_USER=postgres
+DB_PASSWORD=123
+DB_NAME=contact_db
+DB_PORT=5432
+
+KEY_JWT=rahasia-super-aman
+```
+
+> 💡 Pastikan PostgreSQL sudah jalan, dan database `contact_db` sudah dibuat.
+
+### 3. Install Dependencies
+
+```bash
+go mod tidy
+```
+
+### 4. Run Migration (Opsional)
+
+Jika kamu menggunakan AutoMigrate di dalam kode (misalnya di `main.go`), maka akan otomatis membuat tabel saat aplikasi dijalankan. Tapi kalau pakai migration tool (seperti `golang-migrate`), pastikan migration sudah dijalankan terlebih dahulu.
+
+### 5. Run Server
+
+```bash
+go run main.go
+```
+
+> 🚀 Server akan jalan di default port `:8080` jika tidak dikonfigurasi lain.
+
+---
+
 ## 📌 API Endpoint List
 
 ### 🧑‍💻 Users
@@ -155,7 +203,3 @@ Authorization: Bearer <your_token_here>
 - **Pagination** hanya berlaku untuk endpoint **GET /api/contacts**
 - Data user dari JWT, jadi setiap user hanya bisa akses data miliknya
 - Foreign key relation sudah diatur antara **User → Contact → Address**
-
----
-
-Happy Coding 🚀
