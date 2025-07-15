@@ -1,15 +1,15 @@
 PUT http://localhost:8080/api/users/profile
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxMCwidXNlcm5hbWUiOiJ0ZXN0aW5nIiwibmFtZSI6InRlc3RpbmciLCJleHAiOjE3NTA5OTQyNDN9.5fujwVIVU_ZgqWLweWBfLNpcjEW01KCiV7MkRvNQsDk
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6InRlc3RpbmciLCJuYW1lIjoidGVzdGluZyIsImV4cCI6MTc1MjYzNjc1NH0.pPa-fYh1FDoea028R0yZLhnKZRJgi3vwyOHOBwXFuho
 Content-Type: application/json
 
-{
-  "name": "Sandi",
-  "password": "qwe123"
-}
-
 # {
-#   "name": "Sandi"
+#   "name": "Sandi2",
+#   "password": "qwe123"
 # }
+
+{
+  "name": "Coba"
+}
 
 # {
 #   "password": "pw123456"

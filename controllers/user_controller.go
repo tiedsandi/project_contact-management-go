@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/tiedsandi/project_contact-management-go/models"
+	"github.com/tiedsandi/project_contact-management-go/repositories"
 	"github.com/tiedsandi/project_contact-management-go/request"
 	"github.com/tiedsandi/project_contact-management-go/response"
 	"github.com/tiedsandi/project_contact-management-go/services"
@@ -52,15 +53,23 @@ func Login(c *gin.Context) {
 }
 
 func GetUser(c *gin.Context) {
-	userId, _ := c.Get("userId")
-	username, _ := c.Get("username")
-	name, _ := c.Get("name")
+	userIdInterface, exists := c.Get("userId")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+	userId := userIdInterface.(uint)
+
+	user, err := repositories.GetUserByID(userId)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"data": gin.H{
-			"userId":   userId,
-			"username": username,
-			"name":     name,
+		"data": response.UserResponse{
+			Username: user.Username,
+			Name:     user.Name,
 		},
 	})
 }
