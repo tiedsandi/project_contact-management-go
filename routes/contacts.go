@@ -15,4 +15,6 @@ func ContactRoutes(router *gin.Engine) {
 	contactPrivate.GET("/:id", controllers.GetContact)
 	contactPrivate.GET("", controllers.SearchContacts)
 	contactPrivate.DELETE("/:id", controllers.DeleteContact)
+	contactPrivate.GET("/check-email", controllers.CheckEmailAvailable)
+
 }

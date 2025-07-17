@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/tiedsandi/project_contact-management-go/config"
 	"github.com/tiedsandi/project_contact-management-go/models"
 	"github.com/tiedsandi/project_contact-management-go/request"
 	"github.com/tiedsandi/project_contact-management-go/response"
@@ -191,4 +192,30 @@ func DeleteContact(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Contact deleted successfully"})
+}
+
+func CheckEmailAvailable(c *gin.Context) {
+	userIdInterface, exists := c.Get("userId")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"errors": "Unauthorized"})
+		return
+	}
+	userId := userIdInterface.(uint)
+
+	email := c.Query("email")
+	if email == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"errors": "Email is required"})
+		return
+	}
+
+	var count int64
+	err := config.DB.Model(&models.Contact{}).
+		Where("user_id = ? AND email = ?", userId, email).
+		Count(&count).Error
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"errors": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"available": count == 0})
 }
