@@ -33,7 +33,7 @@ func SearchContacts(userId uint, name string, email string, phone string, offset
 		return nil, 0, err
 	}
 
-	err = query.Offset(offset).Limit(size).Find(&contacts).Error
+	err = query.Order("updated_at DESC").Offset(offset).Limit(size).Find(&contacts).Error
 	return contacts, total, err
 }
 

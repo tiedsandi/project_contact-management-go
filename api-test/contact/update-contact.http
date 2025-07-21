@@ -1,11 +1,11 @@
 ### Update Contact
-PUT http://localhost:8080/api/contacts/4
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxMCwidXNlcm5hbWUiOiJ0ZXN0aW5nIiwibmFtZSI6IlNhbmRpIiwiZXhwIjoxNzUxMDIwODg2fQ.p6ltSRl4Wgk910LaKPaEFSaA6_1JufVAy5-7nvP-AOY
+PUT http://localhost:8080/api/contacts/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6InRlc3RpbmciLCJuYW1lIjoiU2FuZGkgMTIzIiwiZXhwIjoxNzUyODgzMTc1fQ.1VlQMFQh9xP0X23ba-8MVuKwcyDeZyOljaBwLVYqtww
 Content-Type: application/json
 
 {
   "first_name": "joko",
-  "last_name": "sandi",
+  "last_name": "anwar",
   "email": "test@test.com",
-  "phone": "32423423434"
+  "phone": "081398688964"
 }

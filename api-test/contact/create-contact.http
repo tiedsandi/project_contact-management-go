@@ -1,12 +1,12 @@
 ### Create Contact (Success Example)
 POST http://localhost:8080/api/contacts
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6InRlc3RpbmciLCJuYW1lIjoiVGVzdGluZyBTYW5kaSIsImV4cCI6MTc1Mjc2MDM1Mn0.dUkuq_RHaTB4tGvrMIxjVOZCwideuwSXZLf8ir9Dilc
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6InRlc3RpbmciLCJuYW1lIjoiU2FuZGkgMTIzIiwiZXhwIjoxNzUyODgzMTc1fQ.1VlQMFQh9xP0X23ba-8MVuKwcyDeZyOljaBwLVYqtww
 Content-Type: application/json
 
 {
   "first_name": "fachran 3",
   "last_name": "sandi 2",
-  "email": "test3@t3est.com",
+  "email": "coba@gmail.com",
   "phone": "32423423434"
 }
 
